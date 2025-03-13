@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     
-    <title>Foodie Finder - Login</title>
+    <title>Foodie Finder - Signup</title>
     <style>
         * {
             margin: 0;
@@ -12,7 +12,7 @@
         }
 
         body {
-            background: url('home_bg.jpg') ;
+            background-image: url("../static/home_bg.jpg");
             height: 100vh;
             display: flex;
             align-items: center;  
@@ -24,7 +24,7 @@
         .login-container {
             background: rgba(255, 255, 255, 0.9);
             padding: 5%;
-            height:50vh;
+            height:62vh;
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
             text-align: center;
@@ -85,18 +85,43 @@
             text-align: left;
             margin-bottom: 4px;
         }
+         /* Add flash message styling */
+         .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        .alert-danger { background-color: #f8d7da; color: #721c24; }
+        .alert-warning { background-color: #fff3cd; color: #856404; }
+        .alert-success { background-color: #d4edda; color: #155724; }
     </style>
 </head>
 <body>
 
     <div class="login-container">
-        <h2>Foodie Finder Login</h2>
-        <form action="dashboard.html" method="POST">
+        <h2>Foodie Finder Signup</h2>
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form action={{url_for('auth.signup_post')}} method="POST">
+            <p class="text">
+                Name:
+            </p>
+            <div class="input-box">
+                <input type="text" name="name" placeholder="Enter your name" value="{{ request.form.name }}" required>
+            </div>
             <p class="text">
                 Email:
             </p>
             <div class="input-box">
-                <input type="text" name="username" placeholder="Enter your email" required>
+                <input type="text" name="email" placeholder="Enter your email" value="{{ request.form.email }}" required>
             </div>
             <p class="text">
                 Password:
@@ -104,9 +129,13 @@
             <div class="input-box">
                 <input type="password" name="password" placeholder="Enter your password" required>
             </div>
-            <button type="submit" class="login-btn">Login</button>
+            <button type="submit" class="login-btn">Signup</button>
         </form>
-        <p class="signup-link">Don't have an account? <a href="signup.html">Sign Up</a></p>
+        <!-- Updated link -->
+        <p class="signup-link">
+            Already have an account? 
+            <a href="{{ url_for('auth.login') }}">Login here</a>
+        </p>
     </div>
 
 </body>
