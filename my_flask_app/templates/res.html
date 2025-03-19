@@ -23,7 +23,7 @@
                 flex-direction: column;
                 align-items: center;
                 justify-content: flex-start; 
-                padding: 200px;
+                padding: 20px;
             }
             .result-list {
                 display: flex;
@@ -114,6 +114,52 @@
                 font-weight: 700;
                 font-size: 12px;
             }
+            /* Modal styles */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                z-index: 1; /* Sit on top */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                background-color: rgb(0, 0, 0); /* Fallback color */
+                background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+                backdrop-filter: blur(10px); /* Blur background */
+            }
+
+            .modal-content {
+                background-color: rgba(30, 30, 30, 0.8);
+                margin: 5% auto; /* 5% from the top and centered */
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%; /* Could be more or less, depending on screen size */
+                border-radius: 10px;
+                color: #fff;
+            }
+
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: #fff;
+                text-decoration: none;
+                cursor: pointer;
+            }
+            /* .Recipe-Title {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            } */
+
         </style>
     </head>
     <body>
@@ -157,8 +203,8 @@
                         <div>
                             <h4 class="Recipe-Title">{{row['RecipeName']}}</h4>
                         </div>
-                        <p><span style="font-weight: 480; margin-top: 5px;margin-bottom: 5px;">Cuisine:</span> {{ row['Cuisine'] }}</p>
-                        <p><span style="font-weight: 480;margin-top: 5px;margin-bottom: 5px;">Course:</span> {{ row['Course'] }}</p>
+                        <p><span style="font-weight: 580; margin-top: 5px;margin-bottom: 5px;font-size: 1rem;">Cuisine:</span> {{ row['Cuisine'] }}</p>
+                        <p><span style="font-weight: 580;margin-bottom: 5px;font-size: 1rem;">Course:</span> {{ row['Course'] }}</p>
                         <button>
                             Add to Favourites
                         </button>
