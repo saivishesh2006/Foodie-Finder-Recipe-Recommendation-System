@@ -2,6 +2,8 @@ from flask import Blueprint,render_template,redirect,url_for,request,flash
 from werkzeug.security import generate_password_hash,check_password_hash
 from .models import User
 from . import db
+from my_flask_app.main import main
+from flask_login import login_user,logout_user,login_required
 
 auth = Blueprint('auth',__name__)
 
@@ -64,5 +66,11 @@ def login_post():
         flash('Password is incorrect, please try again!','error')
         return redirect(url_for('auth.login'))
     
-    return 'Login Successful'
+    login_user(user)
+    return redirect(url_for('main.dish_finder'))
 
+@auth.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('main.home'))

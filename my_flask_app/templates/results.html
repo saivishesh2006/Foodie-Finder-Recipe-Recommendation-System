@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommended Recipes</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <script src="../static/scripts/scripts.js" defer></script>
+</head>
+<body>
+<div class="hero-banner">
+    <div class="wrapper">
+    <main>
+        <ul class="recipe-list">
+            {% for index, row in recipes.iterrows() %}
+                <li class="recipe">
+                    <div class="recipe-header">
+                        <h2 class="recipe-title">{{ row['RecipeName'] }}</h2>
+                        <div class="recipe-image">
+                            <img src="{{ row['images'] }}" alt="{{ row['RecipeName'] }}" onclick="openModal({{ index }})">
+                        </div>
+                    </div>
+                    <div class="recipe-details" id="recipe-details-{{ index }}" style="display:none;">
+                        <p>Total Time: {{ row['TotalTimeInMins'] }} minutes</p>
+                        <p>Ingredients: {{ row['Ingredients'] }}</p>
+                        <p>Instructions:</p>
+                        <div class="instructions">
+                            {{ row['Instructions'] }}
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </main>
+    </div>
+</div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <!-- Recipe details will be injected here -->
+    </div>
+</div>
+</body>
+</html>
