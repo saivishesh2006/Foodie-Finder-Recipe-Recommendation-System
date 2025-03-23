@@ -107,7 +107,7 @@
                     <div class="alert alert-{{category}}">
                         {{message}}
                     </div>
-                    {% endfor %}
+                {% endfor %}
             {% endif %}
         {% endwith %}
         <form action={{url_for('auth.login_post')}} method="POST">
