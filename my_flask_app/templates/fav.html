@@ -1,118 +1,21 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Foodie Finder</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-        <link href="https://fonts.googleapis.com/css2?family=Merienda:wght@300..900&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="../static/css/sidebar.css">
-        <style>
-            body {
-                margin: 0;
-                font-family: "Roboto", sans-serif;
-                color: #333;
-                background-color: rgb(30, 28, 28);
-                background-size: cover;
-                background-position: center;
+{% extends "base.html" %}
 
-                height: 100vh;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: flex-start; 
-                padding: 20px;
-            }
-            
-            
-            .fav-list {
-                display: grid;
-                grid-template-columns: 1fr; 
-                gap: 20px; 
-                padding: 20px;
-            }
-            .dish-card {
-                display: grid;
-                background-color: bisque;
-                grid-template-columns: repeat(3, 1fr); 
-                gap: 10px;
-                background-color: lightgray;
-                padding: 10px;
-                margin-left: 250px;
-                width: 1100px;
-            }
-        </style>
-    </head>
-    <body>
-        <nav class="nav-sidebar">
-            <div class="nav-logo">
-                <i class="fas fa-utensils"></i>
-                <p>Foodie Finder</p>
+
+{% block content %}
+    <div class="main-content">
+        <div class="favorites-header">Your Favorite Recipes</div>
+        <div class="favorites-grid">
+            {% for index,row in favs.iterrows() %}
+            <div class="favorite-card">
+                <img src="{{row['images']}}" alt="{{row['RecipeName']}}">
+                <h3>{{row['RecipeName']}}</h3>
+                <p>{{row['Cuisine']}} • {{row['Diet']}}</p>
             </div>
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="#" class="nav-link active">
-                        <i class="fas fa-home"></i>
-                        <p>Home</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-compass"></i>
-                        <p>Discover</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-heart"></i>
-                        <p>Favorites</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-pizza-slice"></i>
-                        <p>Preferences</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-apple-alt"></i>
-                        <span>Diet</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-        <div style="text-align: center; position: relative;">
-            <div style="border-top: 3px solid beige; width: 150px; margin: auto;"></div>
-            <h1 style="color: #FF9F45; font-size: 36px; margin: 8px 0;">Favorites</h1>
-            <div style="border-bottom: 3px solid beige; width: 150px; margin: auto;"></div>
+            {% endfor %}
         </div>
-        <main>
-            <ul class="fav-list">
-                <div class="dish-card">
-                    <img src="../static/images/BC.jpg" alt="Butter Chicken">
-                    <h2 class="item">Butter Chicken</h4>
-                    <h4 class="item"> ingredients,,,,,</h4>
-                    
-                </div>
-                <div class="dish-card">
-                    <img src="../static/images/BC.jpg" alt="Butter Chicken">
-                    <h2 class="item">Butter Chicken</h4>
-                    <h4 class="item"> ingredients,,,,,</h4>
-                    
-                </div>
-                <div class="dish-card">
-                    <img src="../static/images/BC.jpg" alt="Butter Chicken">
-                    <h2 class="item">Butter Chicken</h4>
-                    <h4 class="item"> ingredients,,,,,</h4>
-                    
-                </div>
-            </ul>
-        </main>
-    </body>
+    </div>
+
+</body>
 </html>
+
+{% endblock %}

@@ -1,12 +1,14 @@
 import os
 import pickle
-from flask import Blueprint, request, render_template
-from flask_login import login_required
+from flask import Blueprint, request, render_template,redirect,url_for,flash
+from flask_login import login_required,current_user
 from my_flask_app.utils.preprocess import preprocess_user_ingredients
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse import hstack
 import re
 import ast
+from . import db
+from .models import Favourite
 
 main = Blueprint('main', __name__)
 
@@ -59,8 +61,24 @@ def dish_finder():
         return render_template('res.html', recipes=recommended_recipes)
     return render_template('dish_finder.html')
 
+@main.route('/add_to_favourites/<int:id>',methods=['GET'])
+def add_to_favourites(id):
+    existing_fav = Favourite.query.filter_by(user_id=current_user.id, recipe_id=id).first()
+    if not existing_fav:
+        new_fav=Favourite(user_id=current_user.id,recipe_id=id)
+        db.session.add(new_fav)
+        db.session.commit()
+        flash('Added to favourites!', 'success')
+    else:
+        flash('Already added to Favourites','info')
+
+    next_page = request.args.get('next')
+    if next_page:
+        return redirect(next_page)
+    return redirect(url_for('main.favourites'))
 
 @main.route('/recipe_details/<int:id>',methods=['GET'])
+@login_required
 def recipe_details(id):
     with open(os.path.join(data_dir, "processed", "Recipes.pkl"), 'rb') as file:
         recipe_df = pickle.load(file)
@@ -70,8 +88,17 @@ def recipe_details(id):
 
     return render_template('recipe_details.html',recipe=recipe)
 
+@main.route('/favourites')
+@login_required
+def favourites():
+    fav_entries = Favourite.query.filter_by(user_id=current_user.id).all()
+    recipe_ids = [fav.recipe_id for fav in fav_entries]
+    with open(os.path.join(data_dir, "processed", "Recipes.pkl"), 'rb') as file:
+        recipe_df = pickle.load(file)
 
+    favs = recipe_df[recipe_df['Srno'].isin(recipe_ids)]
 
+    return render_template('fav.html',favs=favs)
 
 # @main.route('/profile')
 # @login_required

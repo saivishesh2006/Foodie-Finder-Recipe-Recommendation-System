@@ -40,9 +40,9 @@
                     <a href="{{url_for('main.recipe_details',id=row['Srno'])}}" class="btn view-recipe">
                         <i class="fas fa-eye"></i> View Recipe
                     </a>
-                    <button class="btn btn-favorite" onclick="toggleFavorite(add)">
+                    <a href="{{url_for('main.add_to_favourites',id=row['Srno'])}}" class="btn btn-favorite">
                         <i class="far fa-heart"></i> Add to Favorites
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>

@@ -13,11 +13,11 @@
     <div class="nav-sidebar">
         <div class="nav-logo">
             <i class="fas fa-utensils"></i>
-            <span>RecipeAI</span>
+            <span>Foodie Finder</span>
         </div>
         <ul class="nav-menu">
             <li class="nav-item">
-                <a href="/" class="nav-link">
+                <a href="{{url_for('main.dish_finder')}}" class="nav-link">
                     <i class="fas fa-home"></i>
                     <span>Home</span>
                 </a>
@@ -29,15 +29,15 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{url_for('main.favourites')}}" class="nav-link">
                     <i class="fas fa-heart"></i>
                     <span>Favorites</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="#" class="nav-link">
-                    <i class="fas fa-cog"></i>
-                    <span>Preferences</span>
+                    <i class="fas fa-user-circle"></i>
+                    <span>Profile</span>
                 </a>
             </li>
             <li class="nav-item">

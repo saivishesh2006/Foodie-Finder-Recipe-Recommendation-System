@@ -18,6 +18,8 @@ def signup_post():
     name = request.form.get('name')
     email = request.form.get('email')
     password = request.form.get('password')
+    phone=request.form.get('phone')
+    gender=request.form.get('gender')
 
     # if len(password) < 6:                   #Add more security checks later      
     #     flash('Password must be at least 6 characters long.', 'danger')
@@ -33,7 +35,9 @@ def signup_post():
     new_user = User(
         name = name,
         email = email,
-        password = generate_password_hash(password,method='pbkdf2:sha256') #Why did we choose this?
+        password = generate_password_hash(password,method='pbkdf2:sha256'),#Why did we choose this?
+        phone=phone,
+        gender=gender  
     )
 
     db.session.add(new_user)
