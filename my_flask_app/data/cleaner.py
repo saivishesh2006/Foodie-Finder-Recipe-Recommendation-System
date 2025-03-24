@@ -13,7 +13,7 @@ def preprocess_recipe_name(name):
     return name
 
 # Read the Recipe file
-df = pd.read_csv("data/raw/cleaned_IndianFoodDataset_noHindi_noDuplicatescsv.csv")
+df = pd.read_csv("data/raw/Final_Indian_Dataset.csv")
 df_original = df.copy(deep=True)
 
 # Preprocess ingredients and recipe names

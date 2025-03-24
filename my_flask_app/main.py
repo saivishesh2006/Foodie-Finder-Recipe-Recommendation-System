@@ -1,6 +1,7 @@
 import os
 import pickle
 from flask import Blueprint, request, render_template
+from flask_login import login_required
 from my_flask_app.utils.preprocess import preprocess_user_ingredients
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse import hstack
@@ -21,6 +22,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 data_dir = os.path.join(current_dir, "..", "data")
 
 @main.route('/home', methods=['GET','POST'])
+@login_required
 def dish_finder():
     if request.method == 'POST':
         user_ingredients = request.form['ingredients']
@@ -50,12 +52,25 @@ def dish_finder():
         # Compute cosine similarity with the combined TF-IDF matrix
         similarity_scores = cosine_similarity(user_vector_combined, tfidf_combined)
         scores = similarity_scores.flatten()
-        top_indices = scores.argsort()[-5:][::-1]
+        top_indices = scores.argsort()[-6:][::-1]
         
         recommended_recipes = recipe_df.iloc[top_indices]
         recommended_recipes['Instructions'] = recommended_recipes['Instructions'].apply(safe_literal_eval)
         return render_template('res.html', recipes=recommended_recipes)
     return render_template('dish_finder.html')
+
+
+@main.route('/recipe_details/<int:id>',methods=['GET'])
+def recipe_details(id):
+    with open(os.path.join(data_dir, "processed", "Recipes.pkl"), 'rb') as file:
+        recipe_df = pickle.load(file)
+
+    recipe = recipe_df[recipe_df['Srno'] == id].iloc[0]
+    recipe['Instructions'] = safe_literal_eval(recipe['Instructions'])
+
+    return render_template('recipe_details.html',recipe=recipe)
+
+
 
 
 # @main.route('/profile')
