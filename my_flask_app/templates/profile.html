@@ -1,299 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-image: url('../static/images/img4.jpg'); 
-            background-size: cover; 
-            background-attachment: fixed; 
-            background-repeat: no-repeat; 
-            background-size: cover;
-            background-color: #f5f5f5;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .nav-sidebar {
-            width: var(--sidebar-width);
-            background: var(--card-bg);
-            background-color: #FAE3C6;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            padding: 2rem 0;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-        }
+{% extends "base.html" %}
 
-        .nav-logo {
-            padding: 0 2rem;
-            margin-bottom: 3rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
+{% block title %} Profile {% endblock %}
 
-        .nav-logo i {
-            font-size: 1.8rem;
-            color: var(--primary-color);
-        }
-
-        .nav-logo span, .nav-logo p {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        .nav-menu {
-            list-style: none;
-            padding: 0;
-        }
-
-        .nav-item {
-            margin-bottom: 0.5rem;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 1rem 2rem;
-            color: var(--text-light);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            color: var(--primary-color);
-            background: rgba(108, 92, 231, 0.1);
-        }
-
-        .nav-link i {
-            margin-right: 1rem;
-            font-size: 1.2rem;
-            width: 24px;
-            text-align: center;
-        }
-
-        .nav-link.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 4px;
-            background: var(--primary-color);
-            border-radius: 0 4px 4px 0;
-        }
-        .profile-container {
-            background: beige; 
-            max-width: 400px;
-            height: 550px; 
-            width: 100%;
-            margin: auto;
-            padding: 20px; 
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            overflow: hidden; 
-            margin-right: 310px;
-        }
-
-        .profile-photo-container {
-            position: relative;
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 15px;
-            border-radius: 50%;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        
-        .profile-photo {
-            width: 60%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        h2 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 1px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: bold;
-            text-align: left;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: #E63946;
-        }
-
-        input[readonly] {
-            background-color: #f8f8f8;
-            cursor: not-allowed;
-        }
-
-        button {
-            background: linear-gradient(45deg, #E63946, #ff5733);
-            background-size: 200% 200%;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            width: 80%;
-            margin-left:50px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.4s ease-in-out, transform 0.2s ease;
-        }
-
-        button:hover {
-            background: linear-gradient(45deg, #ff5733, #ffbd69);
-            transform: scale(1.05);
-        }
-
-
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-
-            .profile-container {
-                padding: 20px;
-            }
-
-            .profile-photo-container {
-                width: 120px;
-                height: 120px;
-            }
-
-            .profile-photo {
-                width: 100%;
-                height: 100%;
-            }
-        }
-    </style>
-</head>
-<body>
-          <nav class="nav-sidebar">
-          <div class="nav-logo">
-              <i class="fas fa-utensils"></i>
-              <p>Foodie Finder</p>
-          </div>
-          <ul class="nav-menu">
-              <li class="nav-item">
-                  <a href="#" class="nav-link active">
-                      <i class="fas fa-home"></i>
-                      <p>Home</p>
-                  </a>
-              </li>
-              <li class="nav-item">
-                  <a href="#" class="nav-link">
-                      <i class="fas fa-compass"></i>
-                      <p>Discover</p>
-                  </a>
-              </li>
-              <li class="nav-item">
-                  <a href="#" class="nav-link">
-                      <i class="fas fa-heart"></i>
-                      <p>Favorites</p>
-                  </a>
-              </li>
-              <li class="nav-item">
-                  <a href="#" class="nav-link">
-                      <i class="fas fa-pizza-slice"></i>
-                      <p>Preferences</p>
-                  </a>
-              </li>
-              <li class="nav-item">
-                  <a href="#" class="nav-link">
-                      <i class="fas fa-apple-alt"></i>
-                      <span>Diet</span>
-                  </a>
-              </li>
-              <li class="nav-item">
-                  <a href="#" class="nav-link">
-                      <i class="fas fa-sign-out-alt"></i>
-                      <span>Logout</span>
-                  </a>
-              </li>
-          </ul>
-        </nav>
-
-    <div class="profile-container">
-        <div class="profile-photo-container">
-            <img src="../static/images/prof.jpg" class="profile-photo">
+{% block content %}
+    <div class="container">
+        <div class="profile-container">
+            <div class="profile-photo-container">
+                <img src="../static/images/profile-circle.svg" class="profile-photo">
+            </div>
+    
+            <h2>User Profile</h2>
+            <form action="/save_profile" method="POST">
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" name="name" value="{{ user.name }}" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" name="email" value="{{ user.email }}" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone Number:</label>
+                    <input type="tel" 
+                            name="phone" 
+                            placeholder="Enter phone number"
+                            value="{{ user.phone or '' }}"
+                            pattern="[0-9]{10}"
+                            title="Please enter a valid 10-digit phone number">
+                </div>
+                
+                <div class="form-group">
+                    <label>Gender:</label>
+                    <select name="gender">
+                        <option value="" {% if not user.gender %}selected{% endif %}>Select Gender</option>
+                        <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+                        <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                    </select>
+                </div>
+                
+                <button type="submit">Save Profile</button>
+            </form>
         </div>
-
-        <h2>User Profile</h2>
-        <form action="/save_profile" method="POST">
-            <div class="form-group">
-                <label>Name:</label>
-                <input type="text" name="name" value="{{ user.name }}" readonly>
-            </div>
-            
-            <div class="form-group">
-                <label>Email:</label>
-                <input type="email" name="email" value="{{ user.email }}" readonly>
-            </div>
-            
-            <div class="form-group">
-                <label>Phone Number:</label>
-                <input type="tel" 
-                       name="phone" 
-                       placeholder="Enter phone number"
-                       value="{{ user.phone or '' }}"
-                       pattern="[0-9]{10}"
-                       title="Please enter a valid 10-digit phone number">
-            </div>
-            
-            <div class="form-group">
-                <label>Gender:</label>
-                <select name="gender">
-                    <option value="" {% if not user.gender %}selected{% endif %}>Select Gender</option>
-                    <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
-                    <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
-                    <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
-                </select>
-            </div>
-            
-            <button type="submit">Save Profile</button>
-        </form>
     </div>
-</body>
-</html>
+{% endblock %}

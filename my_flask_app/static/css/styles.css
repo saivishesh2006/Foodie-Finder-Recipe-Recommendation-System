@@ -23,14 +23,14 @@ body {
     color: var(--text-color);
     line-height: 1.6;
     min-height: 100vh;
-    background-image: 
+    /* background-image: 
         url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'),
         linear-gradient(135deg, rgba(255, 140, 66, 0.65), rgba(255, 78, 51, 0.65)),
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.15));
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.15)); */
     background-attachment: fixed;
     background-size: cover;
     background-position: center;
-    background-blend-mode: overlay;
+    /* background-blend-mode: overlay; */
     display: flex;
 }
 
@@ -67,13 +67,13 @@ body {
     bottom: 0;
     background: linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.1) 50%, transparent 52%);
     background-size: 200% 200%;
-    animation: shine 3s linear infinite;
-}
+    /* animation: shine 3s linear infinite;*/
+} 
 
-@keyframes shine {
+/* @keyframes shine {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
-}
+} */
 
 .header h1 {
     font-size: 3rem;
@@ -196,14 +196,16 @@ body {
 .btn {
     background-color: var(--primary-color);
     color: white;
-    padding: 1rem 2rem;
+    padding: 1rem 1rem;
+    max-width: 240px;
     border: none;
     border-radius: var(--border-radius);
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: inline-flex;
+    display: flex;
+    justify-content: center;
     align-items: center;
     gap: 0.5rem;
 }
@@ -432,7 +434,7 @@ select.form-control option {
 /* Top Picks Section */
 .top-picks {
     margin-top: 4rem;
-    padding: 3rem 0;
+    padding: 22px 0;
     background: rgba(255, 255, 255, 0.97);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
@@ -620,6 +622,7 @@ select.form-control option {
     gap: 1rem;
     margin-bottom: 1rem;
 }
+
 
 .btn-add-ingredient {
     background: var(--accent-color);
@@ -947,3 +950,117 @@ select.form-control option {
         position: static;
     }
 } 
+
+.profile-container {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow); 
+    max-width: 400px;
+    height: auto; 
+    width: 100%;
+    margin: auto; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden; 
+    margin-right: 310px;
+}
+
+.profile-photo-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.profile-photo {
+    width: 60%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 1px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: bold;
+    text-align: left;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #E63946;
+}
+
+input[readonly] {
+    background-color: #f8f8f8;
+    cursor: not-allowed;
+}
+
+button {
+    background: linear-gradient(45deg, #E63946, #ff5733);
+    background-size: 200% 200%;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    width: 80%;
+    margin-left:50px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.4s ease-in-out, transform 0.2s ease;
+}
+
+button:hover {
+    background: linear-gradient(45deg, #ff5733, #ffbd69);
+    transform: scale(1.05);
+}
+
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .profile-container {
+        padding: 20px;
+    }
+
+    .profile-photo-container {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-photo {
+        width: 100%;
+        height: 100%;
+    }
+}
