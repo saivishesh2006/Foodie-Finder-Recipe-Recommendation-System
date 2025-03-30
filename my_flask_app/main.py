@@ -121,6 +121,24 @@ def favourites():
 def profile():
     return render_template('profile.html',user=current_user.name)
 
+@main.route('/discover')
+@login_required
+def discover():
+    with open(os.path.join(data_dir, "processed", "Recipes.pkl"), 'rb') as file:
+        recipe_df = pickle.load(file)
+    
+    # Pre-filter recipes by category and limit to 6 per category
+    categories = ['Lunch', 'Snack', 'Dinner', 'South Indian Breakfast', 'North Indian Breakfast', 'Brunch']
+    filtered_recipes = {}
+    
+    for category in categories:
+        category_recipes = recipe_df[recipe_df['Course'] == category]
+        if len(category_recipes) > 6:
+            category_recipes = category_recipes.head(6)
+        filtered_recipes[category] = category_recipes
+    
+    return render_template('discover.html', recipes=filtered_recipes)
+
 @main.route('/')
 def home():
     return render_template('index.html')

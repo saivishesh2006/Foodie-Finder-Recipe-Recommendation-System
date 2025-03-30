@@ -50,29 +50,9 @@
 
 <div class="results-actions">
     <button class="btn btn-secondary" onclick="window.location.href='/home'">
-        <i class="fas fa-arrow-left"></i> Back to Preferences
+        <i class="fas fa-arrow-left"></i> Back to Home
     </button>
 </div>
 
 {% endblock %}
-
-{% block scripts %}
-<script>
-    function toggleFavorite(recipeId) {
-        const button = event.currentTarget;
-        const icon = button.querySelector('i');
-        
-        if (icon.classList.contains('far')) {
-            icon.classList.remove('far');
-            icon.classList.add('fas');
-            button.classList.add('active');
-            alert('Added to favorites!');
-        } else {
-            icon.classList.remove('fas');
-            icon.classList.add('far');
-            button.classList.remove('active');
-            alert('Removed from favorites!');
-        }
-    }
-</script>
-{% endblock %} 
+ 

@@ -6,41 +6,51 @@
     <div class="container">
         <div class="profile-container">
             <div class="profile-photo-container">
-                <img src="../static/images/profile-circle.svg" class="profile-photo">
+                <img src="{{ url_for('static', filename='images/user-profile.svg') }}" class="profile-photo">
             </div>
     
-            <h2>User Profile</h2>
+            <h2 class="text-center">User Profile</h2>
             <form action="/save_profile" method="POST">
                 <div class="form-group">
-                    <label>Name:</label>
-                    <input type="text" name="name" value="{{ user.name }}" readonly>
+                    <label><i class="fas fa-user"></i> Name:</label>
+                    <input type="text" name="name" value="{{ user }}" readonly class="form-control">
                 </div>
                 
                 <div class="form-group">
-                    <label>Email:</label>
-                    <input type="email" name="email" value="{{ user.email }}" readonly>
+                    <label><i class="fas fa-envelope"></i> Email:</label>
+                    <input type="email" name="email" value="{{ user.email }}" readonly class="form-control">
                 </div>
                 
                 <div class="form-group">
-                    <label>Phone Number:</label>
+                    <label><i class="fas fa-phone"></i> Phone Number:</label>
                     <input type="tel" 
                             name="phone" 
                             placeholder="Enter phone number"
                             value="{{ user.phone or '' }}"
                             pattern="[0-9]{10}"
-                            title="Please enter a valid 10-digit phone number">
+                            title="Please enter a valid 10-digit phone number"
+                            class="form-control">
+                    <small class="form-text">Enter a 10-digit phone number (e.g., 1234567890)</small>
                 </div>
                 
                 <div class="form-group">
-                    <label>Gender:</label>
-                    <select name="gender">
+                    <label><i class="fas fa-venus-mars"></i> Gender:</label>
+                    <select name="gender" class="form-control">
                         <option value="" {% if not user.gender %}selected{% endif %}>Select Gender</option>
                         <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
                         <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                        <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
                     </select>
                 </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Location:</label>
+                    <input type="text" name="location" placeholder="Enter your location" value="{{ user.location or '' }}" class="form-control">
+                </div>
                 
-                <button type="submit">Save Profile</button>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Save Profile
+                </button>
             </form>
         </div>
     </div>
