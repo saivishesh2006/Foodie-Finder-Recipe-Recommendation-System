@@ -1,0 +1,4 @@
+Srno,RecipeName,Ingredients,Instructions,TotalTimeInMins,Difficulty,Course,images
+1,Pasta Carbonara,"pasta, eggs, cheese, pancetta","[Step 1, Step 2, Step 3]",30,Easy,Dinner,https://example.com/pasta.jpg
+2,Chicken Curry,"chicken, curry powder, onion, garlic","[Step 1, Step 2, Step 3]",45,Medium,Dinner,https://example.com/curry.jpg
+3,Vegetable Soup,"carrots, celery, onion, vegetable broth","[Step 1, Step 2, Step 3]",20,Easy,Lunch,https://example.com/soup.jpg 
