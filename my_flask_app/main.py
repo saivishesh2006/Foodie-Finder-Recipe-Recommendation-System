@@ -9,6 +9,7 @@ import re
 import ast
 from . import db
 from .models import Favourite
+import pandas as pd
 
 main = Blueprint('main', __name__)
 
@@ -42,7 +43,9 @@ def results():
         # If no ingredients provided, redirect back to the dish finder page.
         return redirect(url_for('main.dish_finder'))
 
+    print(f"Original user input: '{user_ingredients}'")
     preprocessed_user_ingredients = preprocess_user_ingredients(user_ingredients)
+    print(f"Preprocessed user input: '{preprocessed_user_ingredients}'")
 
     # Load vectorizers and combined TF-IDF matrix
     with open(os.path.join(data_dir, "processed", "Vectorizer_names.pkl"), 'rb') as file:
@@ -69,12 +72,46 @@ def results():
     similarity_scores = cosine_similarity(user_vector_combined, tfidf_combined)
     scores = similarity_scores.flatten()
     top_indices = scores.argsort()[-6:][::-1]
+    
+    # Debug prints
+    print(f"\nSearch query: '{user_ingredients}'")
+    print(f"Preprocessed query: '{preprocessed_user_ingredients}'")
+    print(f"Top 6 similarity scores: {[round(scores[idx], 4) for idx in top_indices]}")
+    
+    threshold = 0.25  # Set your similarity threshold
+    print(f"Threshold: {threshold}")
 
-    recommended_recipes = recipe_df.iloc[top_indices]
-    # See caveats regarding assignment to a slice; using .loc avoids the warning
-    recommended_recipes.loc[:, 'Instructions'] = recommended_recipes['Instructions'].apply(safe_literal_eval)
+    # Get the similarity scores corresponding to top_indices
+    filtered_indices = [idx for idx in top_indices if scores[idx] >= threshold]
+    
+    # Debug prints
+    print(f"Filtered indices: {filtered_indices}")
+    print(f"Filtered scores: {[round(scores[idx], 4) for idx in filtered_indices if idx < len(scores)]}")
 
-    return render_template('res.html', recipes=recommended_recipes)
+    # Check if we have any results
+    has_results = len(filtered_indices) > 0
+    
+    if has_results:
+        recommended_recipes = recipe_df.iloc[filtered_indices].copy()
+        # See caveats regarding assignment to a slice; using .loc avoids the warning
+        recommended_recipes.loc[:, 'Instructions'] = recommended_recipes['Instructions'].apply(safe_literal_eval)
+        print(f"Recipe names found: {recommended_recipes['RecipeName'].tolist()}")
+    else:
+        # Create an empty DataFrame with the same structure as recipe_df
+        recommended_recipes = pd.DataFrame(columns=recipe_df.columns)
+        print("No recipes met the similarity threshold")
+    
+    # Debug print
+    print(f"Number of recommended recipes: {len(filtered_indices)}")
+    print(f"Has results: {has_results}")
+    print(f"Type of recipes passed to template: {type(recommended_recipes)}")
+    print(f"Is recipes empty?: {len(recommended_recipes) == 0}")
+
+    # Pass an empty DataFrame with the right structure if there are no results
+    if not has_results:
+        return render_template('res.html', recipes=recommended_recipes, has_results=False)
+    
+    return render_template('res.html', recipes=recommended_recipes, has_results=True)
 
 
 @main.route('/add_to_favourites/<int:id>', methods=['GET'])
@@ -119,7 +156,32 @@ def favourites():
 @main.route('/profile')
 @login_required
 def profile():
-    return render_template('profile.html',user=current_user.name)
+    return render_template('profile.html', user=current_user)
+
+@main.route('/save_profile', methods=['POST'])
+@login_required
+def save_profile():
+    if request.method == 'POST':
+        # Get form data
+        phone = request.form.get('phone')
+        gender = request.form.get('gender')
+        
+        gender_map = {
+            'Male': 'M',
+            'Female': 'F'
+        }
+        
+        user = current_user
+        if phone:
+            user.phone = int(phone) if phone.isdigit() else None
+        user.gender = gender_map.get(gender, None)
+        
+        db.session.commit()
+        
+        # Show success message
+        flash('Profile updated successfully!', 'success')
+        
+        return redirect(url_for('main.profile'))
 
 @main.route('/discover')
 @login_required
