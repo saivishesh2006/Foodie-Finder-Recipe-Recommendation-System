@@ -14,27 +14,71 @@
     <section class="preferences-form">
         <h2><i class="fas fa-utensils"></i> "Got ingredients? We've got the perfect dish waiting for you!"</h2>
         <form id="preferencesForm" method="post">
-
+            <!-- Ingredients Input -->
             <div class="form-group ingredients-input-container">
                 <label for="ingredients">Enter Your Available Ingredients</label>
                 <div class="ingredients-input-wrapper">
-                    <input type="text" class="form-control" id="ingredients"  name="ingredients" placeholder="Type ingredients you have (e.g., tomatoes, chicken, rice)" required>
+                    <input type="text" class="form-control" id="ingredients" name="ingredients" placeholder="Type ingredients you have (e.g., tomatoes, chicken, rice)" required>
                 </div>
                 <datalist id="ingredient-list">
                     <option value="Paneer">
                     <option value="Chicken">
                     <option value="Egg">
-                    <option value="Tomatoes">
                 </datalist>
             </div>
-
+        
+            <!-- Cooking Time Buttons -->
+            <div class="form-group">
+                <label>Max Cooking Time</label>
+                <div class="cooking-time-buttons">
+                    <input type="radio" id="cooking_time_all" name="cooking_time" value="all" checked hidden>
+                    <label for="cooking_time_all" class="cooking-time-btn active" onclick="selectCookingTime(this)">
+                        <i class="fas fa-clock"></i>
+                        <span>All</span>
+                    </label>
+                    
+                    <input type="radio" id="cooking_time_quick" name="cooking_time" value="quick" hidden>
+                    <label for="cooking_time_quick" class="cooking-time-btn" onclick="selectCookingTime(this)">
+                        <i class="fas fa-bolt"></i>
+                        <span>Quick (0-30 min)</span>
+                    </label>
+                    
+                    <input type="radio" id="cooking_time_medium" name="cooking_time" value="medium" hidden>
+                    <label for="cooking_time_medium" class="cooking-time-btn" onclick="selectCookingTime(this)">
+                        <i class="fas fa-hourglass-half"></i>
+                        <span>Medium (30-60 min)</span>
+                    </label>
+                    
+                    <input type="radio" id="cooking_time_long" name="cooking_time" value="long" hidden>
+                    <label for="cooking_time_long" class="cooking-time-btn" onclick="selectCookingTime(this)">
+                        <i class="fas fa-hourglass-end"></i>
+                        <span>Long (60+ min)</span>
+                    </label>
+                </div>
+            </div>
+        
+            <!-- Submit Button -->
             <div class="results-actions">
                 <button type="submit" class="btn">
                     <i class="fas fa-sparkles"></i> Find Perfect Recipes
                 </button>
             </div>
-            <!-- <input type="submit" class="btn" value="Find Perfect Recipes"> -->
         </form>
+        
+        <script>
+            function selectCookingTime(button) {
+                // Remove active class from all buttons
+                document.querySelectorAll('.cooking-time-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                // Add active class to the clicked button
+                button.classList.add('active');
+                // Check the associated radio button
+                const radioId = button.getAttribute('for');
+                document.getElementById(radioId).checked = true;
+            }
+        </script>
+        
     </section>
 
     <section class="top-picks">
@@ -75,5 +119,21 @@
         </div>
     </section>             
 </div>
+
+<script>
+    function selectCookingTime(button) {
+        // Remove active class from all buttons
+        document.querySelectorAll('.cooking-time-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Add active class to the clicked button
+        button.classList.add('active');
+        
+        // Check the associated radio button
+        const radioId = button.getAttribute('for');
+        document.getElementById(radioId).checked = true;
+    }
+</script>
 
 {% endblock %}

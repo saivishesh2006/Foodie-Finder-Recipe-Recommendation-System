@@ -29,9 +29,9 @@ data_dir = os.path.join(current_dir, "..", "data")
 def dish_finder():
     if request.method == 'POST':
         user_ingredients = request.form['ingredients']
-        # Instead of processing and rendering results immediately,
-        # redirect to a new results route with the ingredients as a query parameter.
-        return redirect(url_for('main.results', ingredients=user_ingredients))
+        cooking_time_filter = request.form.get('cooking_time', 'all')
+        # Redirect to /results with both ingredients and cooking_time as query parameters.
+        return redirect(url_for('main.results', ingredients=user_ingredients, cooking_time=cooking_time_filter))
     return render_template('dish_finder.html')
 
 
@@ -39,8 +39,10 @@ def dish_finder():
 @login_required
 def results():
     user_ingredients = request.args.get('ingredients')
+    cooking_time_filter = request.args.get('cooking_time', 'all')
+    print(f"Selected cooking time filter: {cooking_time_filter}")
+
     if not user_ingredients:
-        # If no ingredients provided, redirect back to the dish finder page.
         return redirect(url_for('main.dish_finder'))
 
     print(f"Original user input: '{user_ingredients}'")
@@ -57,64 +59,60 @@ def results():
     with open(os.path.join(data_dir, "processed", "Recipes.pkl"), 'rb') as file:
         recipe_df = pickle.load(file)
 
-    # For a 50/50 weighting, use the same query for both fields
-    user_query_name = preprocessed_user_ingredients  # assuming query tokens are relevant to names
-    user_query_ing = preprocessed_user_ingredients
-
-    # Transform the user query for both vectorizers
-    user_vector_name = vectorizer_name.transform([user_query_name])
-    user_vector_ing = vectorizer_ing.transform([user_query_ing])
-
-    # Combine the user vectors with the same weighting used during training (0.5 each)
+    # Process the user query for both vectorizers
+    user_query = preprocessed_user_ingredients
+    user_vector_name = vectorizer_name.transform([user_query])
+    user_vector_ing = vectorizer_ing.transform([user_query])
     user_vector_combined = hstack([0.5 * user_vector_name, 0.5 * user_vector_ing])
 
-    # Compute cosine similarity with the combined TF-IDF matrix
+    # Compute cosine similarity between user query and all recipes
     similarity_scores = cosine_similarity(user_vector_combined, tfidf_combined)
     scores = similarity_scores.flatten()
-    top_indices = scores.argsort()[-6:][::-1]
-    
-    # Debug prints
-    print(f"\nSearch query: '{user_ingredients}'")
-    print(f"Preprocessed query: '{preprocessed_user_ingredients}'")
-    print(f"Top 6 similarity scores: {[round(scores[idx], 4) for idx in top_indices]}")
-    
-    threshold = 0.25  # Set your similarity threshold
-    print(f"Threshold: {threshold}")
 
-    # Get the similarity scores corresponding to top_indices
-    filtered_indices = [idx for idx in top_indices if scores[idx] >= threshold]
-    
-    # Debug prints
-    print(f"Filtered indices: {filtered_indices}")
-    print(f"Filtered scores: {[round(scores[idx], 4) for idx in filtered_indices if idx < len(scores)]}")
+    # Define similarity threshold and get all indices that meet it
+    threshold = 0.25
+    print(f"Similarity threshold: {threshold}")
+    all_valid_indices = [idx for idx, score in enumerate(scores) if score >= threshold]
+    print(f"Indices above threshold: {all_valid_indices}")
 
-    # Check if we have any results
-    has_results = len(filtered_indices) > 0
-    
-    if has_results:
-        recommended_recipes = recipe_df.iloc[filtered_indices].copy()
-        # See caveats regarding assignment to a slice; using .loc avoids the warning
-        recommended_recipes.loc[:, 'Instructions'] = recommended_recipes['Instructions'].apply(safe_literal_eval)
-        print(f"Recipe names found: {recommended_recipes['RecipeName'].tolist()}")
-    else:
-        # Create an empty DataFrame with the same structure as recipe_df
-        recommended_recipes = pd.DataFrame(columns=recipe_df.columns)
+    # Check if we have any results above the threshold
+    if not all_valid_indices:
         print("No recipes met the similarity threshold")
-    
-    # Debug print
-    print(f"Number of recommended recipes: {len(filtered_indices)}")
-    print(f"Has results: {has_results}")
-    print(f"Type of recipes passed to template: {type(recommended_recipes)}")
-    print(f"Is recipes empty?: {len(recommended_recipes) == 0}")
+        empty_recipes = pd.DataFrame(columns=recipe_df.columns)
+        return render_template('res.html', recipes=empty_recipes, has_results=False)
 
-    # Pass an empty DataFrame with the right structure if there are no results
-    if not has_results:
-        return render_template('res.html', recipes=recommended_recipes, has_results=False)
-    
-    return render_template('res.html', recipes=recommended_recipes, has_results=True)
+    # Create a DataFrame for all recipes meeting the threshold and add similarity scores
+    recommended_df = recipe_df.iloc[all_valid_indices].copy()
+    recommended_df['Similarity'] = [scores[idx] for idx in all_valid_indices]
+
+    # Apply cooking time filter if needed
+    if cooking_time_filter != 'all':
+        if cooking_time_filter == 'quick':
+            recommended_df = recommended_df[recommended_df['TotalTimeInMins'] <= 30]
+        elif cooking_time_filter == 'medium':
+            recommended_df = recommended_df[
+                (recommended_df['TotalTimeInMins'] > 30) & (recommended_df['TotalTimeInMins'] <= 60)
+            ]
+        elif cooking_time_filter == 'long':
+            recommended_df = recommended_df[recommended_df['TotalTimeInMins'] > 60]
+
+    # Sort by similarity score in descending order and select the top 6
+    recommended_df = recommended_df.sort_values(by='Similarity', ascending=False)
+    recommended_recipes = recommended_df.head(6).copy()
+
+    # Convert Instructions safely
+    if not recommended_recipes.empty:
+        recommended_recipes.loc[:, 'Instructions'] = recommended_recipes['Instructions'].apply(safe_literal_eval)
+        print(f"Final recommended recipe names: {recommended_recipes['RecipeName'].tolist()}")
+
+    has_results = not recommended_recipes.empty
+
+    return render_template('res.html', recipes=recommended_recipes, has_results=has_results,user_ingredients=user_ingredients,cooking_time_filter=cooking_time_filter)
+
 
 
 @main.route('/add_to_favourites/<int:id>', methods=['GET'])
+@login_required
 def add_to_favourites(id):
     existing_fav = Favourite.query.filter_by(user_id=current_user.id, recipe_id=id).first()
     if not existing_fav:
@@ -129,6 +127,19 @@ def add_to_favourites(id):
     if next_page:
         return redirect(next_page)
     return redirect(request.referrer)
+
+@main.route('/remove_from_favourites/<int:id>', methods=['GET'])
+@login_required
+def remove_from_favourites(id):
+    existing_fav = Favourite.query.filter_by(user_id=current_user.id, recipe_id=id).first()
+    if existing_fav:
+        db.session.delete(existing_fav)
+        db.session.commit()
+        flash('Removed from favourites!', 'success')
+    else:
+        flash('Some error occured', 'error')
+    
+    return redirect(url_for('main.favourites'))
 
 @main.route('/recipe_details/<int:id>',methods=['GET'])
 @login_required

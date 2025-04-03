@@ -1,7 +1,0 @@
-flask
-flask-login
-flask-sqlalchemy
-pandas
-numpy
-scikit-learn
-scipy

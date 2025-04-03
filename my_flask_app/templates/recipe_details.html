@@ -18,7 +18,9 @@
         <div class="recipe-main-content">
             <div class="recipe-description">
                 <h2>About This Recipe</h2>
-                <p>{{ recipe.description }}</p>
+                <p><i class="fas fa-clock"></i> {{ recipe['TotalTimeInMins']|int }} mins</p>
+                <p><i class="fas fa-utensils"></i> {{ recipe['Servings'] }} servings</p>
+                <p><i class="fas fa-fire"></i> {{ recipe['Calories (kcal)'] }} calories(kcal)</p>
             </div>
 
             <div class="recipe-ingredients">
@@ -97,12 +99,6 @@
                             <span class="nutrition-value">{{ recipe['Fats (g).1'] }}g</span>
                         </div>
                     </div>
-                </div>
-
-                <div class="recipe-actions">
-                    <button class="btn btn-primary" onclick="window.print()">
-                        <i class="fas fa-print"></i> Print Recipe
-                    </button>
                 </div>
             </div>
         </div>

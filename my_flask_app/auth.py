@@ -1,9 +1,12 @@
-from flask import Blueprint,render_template,redirect,url_for,request,flash
+from flask import Blueprint,render_template,redirect,url_for,request,flash,session, current_app
 from werkzeug.security import generate_password_hash,check_password_hash
 from .models import User
 from . import db
 from my_flask_app.main import main
-from flask_login import login_user,logout_user,login_required
+from flask_login import login_user,logout_user,login_required, current_user
+from datetime import datetime, timedelta
+import time
+import secrets
 
 auth = Blueprint('auth',__name__)
 
@@ -54,12 +57,18 @@ def signup_post():
 
 @auth.route('/login')
 def login():
+    # Force logout any existing user
+    if current_user.is_authenticated:
+        logout_user()
+        session.clear()
     return render_template('login.html')
 
 @auth.route('/login',methods=['POST'])
 def login_post():
     email = request.form.get('email')
     password = request.form.get('password')
+    # Always set remember to False to disable the remember me functionality
+    remember = False
 
     user = User.query.filter_by(email=email).first()
 
@@ -70,11 +79,50 @@ def login_post():
         flash('Password is incorrect, please try again!','error')
         return redirect(url_for('auth.login'))
     
-    login_user(user)
-    return redirect(url_for('main.dish_finder'))
+    # Clear any existing session data first to prevent session fixation
+    session.clear()
+    
+    # Set remember=False to disable the remember me functionality
+    login_user(user, remember=remember)
+    
+    # Generate a unique session ID
+    session['session_id'] = secrets.token_hex(16)
+    
+    # Set a flag in the session to indicate this is a fresh login
+    session['is_fresh_login'] = True
+    session['login_time'] = time.time()
+    session['user_id'] = user.id
+    session['user_email'] = user.email
+    
+    # Log login attempt
+    print(f"User {user.email} logged in at {datetime.now()}")
+    
+    # Clear any cached pages
+    response = redirect(url_for('main.dish_finder'))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, private'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 @auth.route('/logout')
 @login_required
 def logout():
+    # Log logout attempt
+    if current_user.is_authenticated:
+        print(f"User {current_user.email} logged out at {datetime.now()}")
+    
+    # Logout the user
     logout_user()
-    return redirect(url_for('main.home'))
+    
+    # Clear the session completely
+    session.clear()
+    
+    # Show logout message
+    flash("You have been successfully logged out.", "success")
+    
+    # Redirect with cache control headers
+    response = redirect(url_for('auth.login'))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, private'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response

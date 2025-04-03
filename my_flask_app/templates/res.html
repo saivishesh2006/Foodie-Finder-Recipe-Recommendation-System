@@ -8,6 +8,27 @@
     <h1>Your Personalized Recipe Recommendations</h1>
 </header>
 
+<div class="results-summary">
+    <div class="summary-card">
+        <i class="fas fa-carrot"></i>
+        <h3>Given Ingredients</h3>
+        <p>{{ user_ingredients }}</p>
+    </div>
+    <div class="summary-card">
+        <i class="fas fa-clock"></i>
+        <h3>Cooking Time Duration</h3>
+        <p>{% if cooking_time_filter == "all" %}
+            All durations
+        {% elif cooking_time_filter == "quick" %}
+            0-30 minutes
+        {% elif cooking_time_filter == "medium" %}
+            30-60 minutes
+        {% elif cooking_time_filter == "long" %}
+            60+ minutes
+        {% endif %}</p>
+    </div>
+</div>
+
 <section class="recommendations">
     {% if not has_results %}
         <div class="no-results-container">
