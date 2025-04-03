@@ -25,27 +25,34 @@
 
             <div class="recipe-ingredients">
                 <h2>Ingredients</h2>
-                <!-- <ul class="ingredients-list">
-                    {% for ingredient in recipe.ingredients %}
-                    <li>
-                        <span class="ingredient-checkbox">
-                            <input type="checkbox" id="ingredient-{{ loop.index }}">
-                            <label for="ingredient-{{ loop.index }}">{{ ingredient }}</label>
-                        </span>
-                    </li>
-                    {% endfor %}
-                </ul> -->
                 <p>
-                    {{recipe['TranslatedIngredients']}}
+                    {{ recipe['TranslatedIngredients'] }}
                 </p>
             </div>
 
             <div class="recipe-instructions">
                 <h2>Instructions</h2>
                 <p>
-                    {{recipe['TranslatedInstructions']}}
+                    {{ recipe['TranslatedInstructions'] }}
                 </p>
             </div>
+
+            <!-- Hindi Recipe Details Section using existing classes -->
+            <div class="recipe-ingredients">
+                <h2>सामग्री (हिंदी)</h2>
+                <p>
+                    {{ recipe['HindiTranslatedIngredients'] }}
+                </p>
+            </div>
+
+            <div class="recipe-instructions">
+                <h2>निर्देश (हिंदी)</h2>
+                <p>
+                    {{ recipe['HindiTranslatedInstructions'] }}
+                </p>
+            </div>
+            <!-- End Hindi Section -->
+
         </div>
 
         <div class="recipe-sidebar">
@@ -104,4 +111,4 @@
         </div>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}

@@ -10,6 +10,8 @@ import ast
 from . import db
 from .models import Favourite
 import pandas as pd
+from googletrans import Translator
+
 
 main = Blueprint('main', __name__)
 
@@ -141,16 +143,40 @@ def remove_from_favourites(id):
     
     return redirect(url_for('main.favourites'))
 
-@main.route('/recipe_details/<int:id>',methods=['GET'])
+@main.route('/recipe_details/<int:id>', methods=['GET'])
 @login_required
 def recipe_details(id):
     with open(os.path.join(data_dir, "processed", "Recipes.pkl"), 'rb') as file:
         recipe_df = pickle.load(file)
 
+    # Find the desired recipe row
     recipe = recipe_df[recipe_df['Srno'] == id].iloc[0]
-    recipe['Instructions'] = safe_literal_eval(recipe['Instructions'])
 
-    return render_template('recipe_details.html',recipe=recipe)
+    # Convert your instructions field (if it's stored as a string that needs literal_eval, do it here)
+    recipe['Instructions'] = safe_literal_eval(recipe['Instructions'])
+    
+    # Initialize the Google Translate client
+    translator = Translator()
+
+    # If your recipe already has 'TranslatedIngredients' and 'TranslatedInstructions' in English:
+    english_ingredients = recipe.get('TranslatedIngredients', '')
+    english_instructions = recipe.get('TranslatedInstructions', '')
+
+    # Translate them into Hindi
+    if english_ingredients:
+        recipe['HindiTranslatedIngredients'] = translator.translate(english_ingredients, dest='hi').text
+    else:
+        recipe['HindiTranslatedIngredients'] = ''
+
+    if english_instructions:
+        recipe['HindiTranslatedInstructions'] = translator.translate(english_instructions, dest='hi').text
+    else:
+        recipe['HindiTranslatedInstructions'] = ''
+
+    # Render the updated recipe with Hindi fields
+    return render_template('recipe_details.html', recipe=recipe)
+
+
 
 @main.route('/favourites')
 @login_required
