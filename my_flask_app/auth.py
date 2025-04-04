@@ -32,7 +32,7 @@ def signup_post():
     # print("Signup: ",name,email,password)
     user = User.query.filter_by(email=email).first()
     if user:
-        flash('User already exists. Please log in.', 'warning')
+        flash('User already exists. Please log in.', 'danger')
         return redirect(url_for('auth.login'))
     
     new_user = User(

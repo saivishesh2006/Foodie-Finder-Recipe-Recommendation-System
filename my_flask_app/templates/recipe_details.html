@@ -18,41 +18,37 @@
         <div class="recipe-main-content">
             <div class="recipe-description">
                 <h2>About This Recipe</h2>
-                <p><i class="fas fa-clock"></i> {{ recipe['TotalTimeInMins']|int }} mins</p>
-                <p><i class="fas fa-utensils"></i> {{ recipe['Servings'] }} servings</p>
-                <p><i class="fas fa-fire"></i> {{ recipe['Calories (kcal)'] }} calories(kcal)</p>
+                <p><b>Preperation Time: </b> {{ recipe['PrepTimeInMins']|int }} mins</p>
+                <p><b>Cooking Time: </b> {{ recipe['CookTimeInMins']|int }} mins</p>
+                <p><b>Total Time Taken: </b> {{ recipe['TotalTimeInMins']|int }} mins</p>
+                <p><b>Servings: </b> {{ recipe['Servings'] }} servings</p>
+                <p><b>Cuisine: </b> {{ recipe['Cuisine'] }} </p>
+                <p><b>Course: </b> {{ recipe['Course'] }} </p>
+                <p><b>Diet: </b> {{ recipe['Diet'] }} </p>
             </div>
-
             <div class="recipe-ingredients">
                 <h2>Ingredients</h2>
+                <!-- <ul class="ingredients-list">
+                    {% for ingredient in recipe.ingredients %}
+                    <li>
+                        <span class="ingredient-checkbox">
+                            <input type="checkbox" id="ingredient-{{ loop.index }}">
+                            <label for="ingredient-{{ loop.index }}">{{ ingredient }}</label>
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul> -->
                 <p>
-                    {{ recipe['TranslatedIngredients'] }}
+                    {{recipe['TranslatedIngredients']}}
                 </p>
             </div>
 
             <div class="recipe-instructions">
                 <h2>Instructions</h2>
                 <p>
-                    {{ recipe['TranslatedInstructions'] }}
+                    {{recipe['TranslatedInstructions']}}
                 </p>
             </div>
-
-            <!-- Hindi Recipe Details Section using existing classes -->
-            <div class="recipe-ingredients">
-                <h2>सामग्री (हिंदी)</h2>
-                <p>
-                    {{ recipe['HindiTranslatedIngredients'] }}
-                </p>
-            </div>
-
-            <div class="recipe-instructions">
-                <h2>निर्देश (हिंदी)</h2>
-                <p>
-                    {{ recipe['HindiTranslatedInstructions'] }}
-                </p>
-            </div>
-            <!-- End Hindi Section -->
-
         </div>
 
         <div class="recipe-sidebar">
@@ -106,6 +102,12 @@
                             <span class="nutrition-value">{{ recipe['Fats (g).1'] }}g</span>
                         </div>
                     </div>
+                </div>
+
+                <div class="recipe-actions">
+                    <button class="btn btn-primary" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print Recipe
+                    </button>
                 </div>
             </div>
         </div>

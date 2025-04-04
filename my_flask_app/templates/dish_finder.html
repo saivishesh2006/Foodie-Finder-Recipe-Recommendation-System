@@ -89,33 +89,72 @@
         </div>
         
         <div class="top-picks-grid">
-            <div class="top-pick-card">
-                <img src="../static/images/BC.jpg" alt="Butter Chicken" class="top-pick-image">
-                <div class="top-pick-content">
-                    <h3 class="top-pick-title">Butter Chicken</h3>
-                    <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6;">
-                        Butter Chicken is a creamy, spiced tomato-based dish with tender, flavorful chicken. Best enjoyed with naan or rice! 🍛🔥
-                    </p>
-                </div>
-            </div>
-            <div class="top-pick-card">
-                <img src="../static/images/MP.jpg" alt="Pizza" class="top-pick-image">
-                <div class="top-pick-content">
-                    <h3 class="top-pick-title">Margherita Pizza</h3>
-                    <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6;">
-                        Margherita Pizza is a classic delight with a crispy crust, tangy tomato sauce, fresh mozzarella, and basil. Simple yet flavorful! 🍕
-                    </p>
+                <div class="recipe-card">
+                    <img src=https://www.archanaskitchen.com/images/archanaskitchen/Indian_Non_Veg_Recipes/Butter_chicken_recipe.jpg alt="Butter Chicken Recipe - The Classic Indian Chicken Gravy" class="recipe-image">
+                    <div class="recipe-content">
+                        <h3 class="recipe-title">Butter Chicken Recipe - The Classic Indian Chicken Gravy</h3>
+                        <div class="recipe-info">
+                            <span>
+                                <i class="fas fa-clock"></i> 45 mins
+                            </span>
+                            <span>
+                                <i class="fas fa-chart-line"></i> Hard
+                            </span>
+                        </div>
+                        <div class="recipe-actions">
+                            <a href="{{ url_for('main.recipe_details', id=6991) }}" class="btn view-recipe">
+                                <i class="fas fa-eye"></i> View Recipe
+                            </a>                            
+                            <a href="{{ url_for('main.add_to_favourites', id=6991) }}" class="btn btn-favorite">
+                                <i class="far fa-heart"></i> Add to Favorites
+                            </a>                                                                       
+                        </div>
+                    </div>
+                </div>          
+                <div class="recipe-card">
+                    <img src=https://www.archanaskitchen.com//images/archanaskitchen/1-Author/Priyanshu_Agarwal/Big_Farm_Pizza.jpg alt="Big Farm Fresh Pizza Recipe Loaded With Crisp Veggies" class="recipe-image">
+                    <div class="recipe-content">
+                        <h3 class="recipe-title">Big Farm Fresh Pizza Recipe Loaded With Crisp Veggies</h3>
+                        <div class="recipe-info">
+                            <span>
+                                <i class="fas fa-clock"></i> 60 mins
+                            </span>
+                            <span>
+                                <i class="fas fa-chart-line"></i> Hard
+                            </span>
+                        </div>
+                        <div class="recipe-actions">
+                            <a href="{{ url_for('main.recipe_details', id=7132) }}" class="btn view-recipe">
+                                <i class="fas fa-eye"></i> View Recipe
+                            </a>                            
+                            <a href="{{ url_for('main.add_to_favourites', id=7132) }}" class="btn btn-favorite">
+                                <i class="far fa-heart"></i> Add to Favorites
+                            </a>                                              
+                        </div>
+                    </div>
                 </div> 
-            </div>
-            <div class="top-pick-card">
-                <img src="../static/images/PT.jpg" alt="Paneer Tikka" class="top-pick-image">
-                <div class="top-pick-content">
-                    <h3 class="top-pick-title">Paneer Tikka</h3>
-                    <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6;">
-                        Paneer Tikka is a smoky, spiced grilled paneer delight. Juicy, flavorful, and perfect for any occasion! 🔥🧀
-                    </p>
-                </div>
-            </div>
+                <div class="recipe-card">
+                    <img src=https://www.archanaskitchen.com//images/archanaskitchen/0-Archanas-Kitchen-Recipes/2016/sept-19/Hariyali_Paneer_Tikka_Masala_Recipe_Gravy_North_Indian_Sabzi-3.jpg  alt="Tandoori Paneer Tikka Masala Recipe" class="recipe-image">
+                    <div class="recipe-content">
+                        <h3 class="recipe-title">Tandoori Paneer Tikka Masala Recipe</h3>
+                        <div class="recipe-info">
+                            <span>
+                                <i class="fas fa-clock"></i> 45 mins
+                            </span>
+                            <span>
+                                <i class="fas fa-chart-line"></i> Hard
+                            </span>
+                        </div>
+                        <div class="recipe-actions">
+                            <a href="{{ url_for('main.recipe_details', id=6080) }}" class="btn view-recipe">
+                                <i class="fas fa-eye"></i> View Recipe
+                            </a>                            
+                            <a href="{{ url_for('main.add_to_favourites', id=6080) }}" class="btn btn-favorite">
+                                <i class="far fa-heart"></i> Add to Favorites
+                            </a>                                                
+                        </div>
+                    </div>
+                </div> 
         </div>
     </section>             
 </div>

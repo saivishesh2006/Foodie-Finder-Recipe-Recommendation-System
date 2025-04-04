@@ -28,7 +28,7 @@ vectorizer_name = TfidfVectorizer()
 tfidf_ing = vectorizer_ing.fit_transform(df['Ingredients'])
 tfidf_name = vectorizer_name.fit_transform(df['RecipeName_clean'])
 
-# Combine the two matrices with equal weight (50% each)
+# Combine the two matrices with equal weight 
 tfidf_combined = hstack([0.65 * tfidf_name, 0.6 * tfidf_ing])
 
 # Save the combined matrix and both vectorizers for later use

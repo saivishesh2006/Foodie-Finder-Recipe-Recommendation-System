@@ -1,0 +1,31 @@
+# Foodie Finder Requirements
+# ----------------------
+
+# Backend Dependencies
+# -------------------
+Flask
+Werkzeug
+Flask-Login
+Flask-SQLAlchemy
+nltk
+scikit-learn
+scipy
+pandas
+numpy
+
+# Frontend Dependencies
+# --------------------
+Flask-WTF
+Jinja2
+itsdangerous
+Pillow  # For image processing if needed
+
+# Database Dependencies
+# -------------------
+SQLAlchemy
+alembic  # For database migrations
+
+# Security Dependencies
+# -------------------
+python-dotenv  # For environment variables
+bcrypt  # Additional password hashing

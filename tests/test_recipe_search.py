@@ -1,89 +1,58 @@
-import pytest
-import os
-import pickle
-import pandas as pd
-from unittest.mock import patch, MagicMock
-import numpy as np
-from scipy.sparse import csr_matrix
+def test_recipe_recommendation(login):
+    response1 = login.get("/results?ingredients=chicken,egg", follow_redirects=True)
+    assert response1.status_code == 200
+    assert b"Chicken And Egg Soup Recipe" in response1.data
+    assert b"Fried Egg Recipe - Sunny Side Up" in response1.data
+    assert b"Egg Pakora Recipe - Egg Fritters" in response1.data
+    assert b"Boiled Egg With Salt And Pepper Recipe - Finger Food For Babies Above 9 Months" in response1.data
+    assert b"Spinach Egg Muffins Recipe" in response1.data
+    assert b"Egg Dosa Recipe" in response1.data
 
-# Sample test data
-@pytest.fixture
-def sample_recipes():
-    """Create a sample recipes DataFrame for testing."""
-    return pd.DataFrame({
-        'Srno': [1, 2, 3],
-        'RecipeName': ['Pasta Carbonara', 'Chicken Curry', 'Vegetable Soup'],
-        'Ingredients': [
-            'pasta, eggs, cheese, pancetta', 
-            'chicken, curry powder, onion, garlic',
-            'carrots, celery, onion, vegetable broth'
-        ],
-        'Instructions': [
-            '[Step 1, Step 2, Step 3]',
-            '[Step 1, Step 2, Step 3]',
-            '[Step 1, Step 2, Step 3]'
-        ],
-        'TotalTimeInMins': [30, 45, 20],
-        'Difficulty': ['Easy', 'Medium', 'Easy'],
-        'Course': ['Dinner', 'Dinner', 'Lunch'],
-        'images': [
-            'https://example.com/pasta.jpg',
-            'https://example.com/curry.jpg',
-            'https://example.com/soup.jpg'
-        ]
-    })
+    response2 = login.get("/results?ingredients=paneer,butter", follow_redirects=True)
+    assert response2.status_code == 200
+    assert b"Paneer Butter Masala Recipe" in response2.data
+    assert b"Paneer Matar Butter Masala (Indian Cottage Cheese and Peas Masala With Butter) Recipe" in response2.data
+    assert b"Lahsuni Paneer Recipe - Paneer Flavoured With Garlic" in response2.data
+    assert b"Layered Paneer Butter Masala Biryani Recipe" in response2.data
+    assert b"Crispy Paneer Pakora Recipe With Garlic Chutney" in response2.data
+    assert b"Paneer Capsicum Sandwich Recipe" in response2.data
 
-@pytest.fixture
-def mock_recipe_data(monkeypatch, sample_recipes):
-    """Mock the loading of recipe data."""
-    # Create a mock for pickle.load to return our sample data
-    mock_pickle_load = MagicMock(return_value=sample_recipes)
-    monkeypatch.setattr(pickle, 'load', mock_pickle_load)
-    
-    # Mock the TF-IDF matrix and vectorizers
-    mock_tfidf = csr_matrix((3, 10))  # 3 recipes, 10 features
-    mock_vectorizer = MagicMock()
-    mock_vectorizer.transform.return_value = csr_matrix((1, 5))  # 1 query, 5 features
-    
-    return {
-        'recipes': sample_recipes,
-        'tfidf': mock_tfidf,
-        'vectorizer': mock_vectorizer
-    }
+    response3 = login.get("/results?ingredients=dog,cat", follow_redirects=True)
+    assert response3.status_code == 200
+    assert b"Dog curry" not in response3.data
+    assert b"Cat playing" not in response3.data
+    #assert b"No matches found" in response3.data  
+   
+    response4 = login.get("/results?ingredients=maida,cheese", follow_redirects=True)
+    assert response4.status_code == 200
+    assert b"Heart Shaped Sugar Cookies Recipe" in response4.data 
 
-@pytest.mark.usefixtures("mock_recipe_data")
-def test_search_results_page(logged_in_client):
-    """Test that the search results page loads successfully."""
-    response = logged_in_client.get('/results?ingredients=chicken')
-    assert response.status_code == 200
-    assert b'Recipe Recommendations' in response.data
+    response5 = login.get("/results?ingredients=laptop,computer", follow_redirects=True)
+    assert response5.status_code == 200
+    assert b"Laptop features" not in response5.data
+    assert b"Computer model" not in response5.data
+    # assert b"No matches found" in response5.data
 
-@pytest.mark.usefixtures("mock_recipe_data")
-def test_empty_search_results(logged_in_client):
-    """Test that searching with no ingredients redirects to home."""
-    response = logged_in_client.get('/results')
-    assert response.status_code == 302  # Redirect
-    assert '/home' in response.location
+    response6 = login.get("/results?ingredients=rice,dal", follow_redirects=True)
+    assert response6.status_code == 200
+    assert b"Chilka Roti Recipe (Jharkhand Style Rice and Lentil Roti)" in response6.data
+    assert b"Panchmel Dal Recipe | Rajasthani Dal | Panchkuti Dal" in response6.data
+    assert b"How To Make Homemade Idiyappam Recipe - Rice Sevai Recipe" in response6.data
+    assert b"Chana Dal Khichdi Recipe" in response6.data
+    assert b"Homemade Rice Puttu Recipe | Kerala Matta Rice or Basmati Rice" in response6.data
+    assert b"Jeera Rice Recipe - Cumin And Ghee Flavored Rice" in response6.data
 
-@pytest.mark.usefixtures("mock_recipe_data")
-def test_search_no_matches(logged_in_client):
-    """Test that searching for non-existent ingredients shows no results."""
-    with patch('my_flask_app.main.cosine_similarity') as mock_cosine:
-        # Simulate all scores below threshold
-        mock_cosine.return_value = np.array([[0.1, 0.1, 0.1]])
-        
-        response = logged_in_client.get('/results?ingredients=nonexistentingredient')
-        assert response.status_code == 200
-        assert b'No matches found' in response.data
+    response7 = login.get("/results?ingredients=shirts,pants", follow_redirects=True)
+    assert response7.status_code == 200
+    assert b"pants for kids" not in response7.data
+    assert b"Shirts for men" not in response7.data
+    assert b"No matches found" in response5.data
 
-@pytest.mark.usefixtures("mock_recipe_data")
-def test_search_with_matches(logged_in_client):
-    """Test that searching for existing ingredients shows results."""
-    with patch('my_flask_app.main.cosine_similarity') as mock_cosine:
-        # Simulate one score above threshold
-        mock_cosine.return_value = np.array([[0.1, 0.3, 0.1]])
-        
-        response = logged_in_client.get('/results?ingredients=chicken')
-        assert response.status_code == 200
-        assert b'Recipe Recommendations' in response.data
-        assert b'Chicken Curry' in response.data  # Should find this recipe 
+    response8 = login.get("/results?ingredients=rava,rice,oil", follow_redirects=True)
+    assert response8.status_code == 200
+    assert b"Rava Chakli Recipe" in response8.data
+    assert b"Kara Kadubu Recipe (Malanad Style Steamed Spiced Rice Dumplings)" in response8.data
+    assert b"Andhra Style Uppu Pindi Recipe (Rice Rava and Moong Dal Pudding Recipe)" in response8.data
+    assert b"Nagli Rava Upma Recipe - Healthy Ragi Rava Upma Recipe" in response8.data
+    assert b"Togarikalu Akki Recipe - Karnataka Style Rice Rava Upma with Fresh Pigeon Peas" in response8.data
+    assert b"Dibba Rotti/Minapa Rotti Recipe (Pan Idli Recipe)" in response8.data

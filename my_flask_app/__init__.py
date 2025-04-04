@@ -11,10 +11,8 @@ def create_app():
 
     app.config['SECRET_KEY'] = 'secret-key'
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///project.db"
-    
-    # Session security configuration
     app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['SESSION_COOKIE_SECURE'] = True  # For HTTPS environments
+    app.config['SESSION_COOKIE_SECURE'] = True 
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     app.config['SESSION_USE_SIGNER'] = True

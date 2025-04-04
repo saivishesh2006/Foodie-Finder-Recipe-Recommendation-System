@@ -1,5 +1,6 @@
 from . import db
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer,primary_key=True)
@@ -9,6 +10,14 @@ class User(db.Model, UserMixin):
     phone=db.Column(db.Integer)
     gender=db.Column(db.String(1))
     favourites = db.relationship('Favourite',backref='author',lazy=True)
+
+    def set_password(self, password):
+        """Set the password to a hashed value."""
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        """Check if the provided password matches the stored hashed password."""
+        return check_password_hash(self.password, password)
 
 class Favourite(db.Model):
     id=db.Column(db.Integer,primary_key=True)

@@ -10,8 +10,6 @@ import ast
 from . import db
 from .models import Favourite
 import pandas as pd
-from googletrans import Translator
-
 
 main = Blueprint('main', __name__)
 
@@ -48,6 +46,12 @@ def results():
         return redirect(url_for('main.dish_finder'))
 
     print(f"Original user input: '{user_ingredients}'")
+    
+    # Split into individual ingredients
+    ingredients_list = user_ingredients.split(',')
+    ingredients_list = [ing.strip() for ing in ingredients_list]
+    print(f"Individual ingredients: {ingredients_list}")
+    
     preprocessed_user_ingredients = preprocess_user_ingredients(user_ingredients)
     print(f"Preprocessed user input: '{preprocessed_user_ingredients}'")
 
@@ -61,7 +65,31 @@ def results():
     with open(os.path.join(data_dir, "processed", "Recipes.pkl"), 'rb') as file:
         recipe_df = pickle.load(file)
 
-    # Process the user query for both vectorizers
+    # Check each individual ingredient for zero similarity
+    has_zero_similarity = False
+    threshold = 0.25  # Define threshold here so it's available for individual ingredient checks
+    for ingredient in ingredients_list:
+        # Preprocess individual ingredient
+        preprocessed_ingredient = preprocess_user_ingredients(ingredient)
+        if preprocessed_ingredient.strip():  # Only process non-empty strings
+            # Get similarity for just this ingredient
+            ingredient_vector_name = vectorizer_name.transform([preprocessed_ingredient])
+            ingredient_vector_ing = vectorizer_ing.transform([preprocessed_ingredient])
+            ingredient_vector_combined = hstack([0.5 * ingredient_vector_name, 0.5 * ingredient_vector_ing])
+            
+            # Compute similarity for this ingredient
+            ingredient_similarity = cosine_similarity(ingredient_vector_combined, tfidf_combined)
+            max_similarity = ingredient_similarity.max()
+            
+            print(f"Ingredient '{ingredient}' has max similarity: {max_similarity}")
+            
+            # If any ingredient has similarity below threshold, mark for no results
+            if max_similarity < threshold:
+                print(f"Ingredient '{ingredient}' has similarity below threshold!")
+                has_zero_similarity = True
+                break
+
+    # Process the combined user query for vectorizers
     user_query = preprocessed_user_ingredients
     user_vector_name = vectorizer_name.transform([user_query])
     user_vector_ing = vectorizer_ing.transform([user_query])
@@ -71,17 +99,16 @@ def results():
     similarity_scores = cosine_similarity(user_vector_combined, tfidf_combined)
     scores = similarity_scores.flatten()
 
-    # Define similarity threshold and get all indices that meet it
-    threshold = 0.25
+    # Get all indices that meet the threshold
     print(f"Similarity threshold: {threshold}")
     all_valid_indices = [idx for idx, score in enumerate(scores) if score >= threshold]
     print(f"Indices above threshold: {all_valid_indices}")
 
-    # Check if we have any results above the threshold
-    if not all_valid_indices:
-        print("No recipes met the similarity threshold")
+    # Check if we have any results above the threshold or if any ingredient has zero similarity
+    if not all_valid_indices or has_zero_similarity:
+        print("No recipes met the criteria: either below similarity threshold or ingredient with zero similarity")
         empty_recipes = pd.DataFrame(columns=recipe_df.columns)
-        return render_template('res.html', recipes=empty_recipes, has_results=False)
+        return render_template('res.html', recipes=empty_recipes, has_results=False, user_ingredients=user_ingredients, cooking_time_filter=cooking_time_filter)
 
     # Create a DataFrame for all recipes meeting the threshold and add similarity scores
     recommended_df = recipe_df.iloc[all_valid_indices].copy()
@@ -109,7 +136,7 @@ def results():
 
     has_results = not recommended_recipes.empty
 
-    return render_template('res.html', recipes=recommended_recipes, has_results=has_results,user_ingredients=user_ingredients,cooking_time_filter=cooking_time_filter)
+    return render_template('res.html', recipes=recommended_recipes, has_results=has_results, user_ingredients=user_ingredients, cooking_time_filter=cooking_time_filter)
 
 
 
@@ -143,40 +170,16 @@ def remove_from_favourites(id):
     
     return redirect(url_for('main.favourites'))
 
-@main.route('/recipe_details/<int:id>', methods=['GET'])
+@main.route('/recipe_details/<int:id>',methods=['GET'])
 @login_required
 def recipe_details(id):
     with open(os.path.join(data_dir, "processed", "Recipes.pkl"), 'rb') as file:
         recipe_df = pickle.load(file)
 
-    # Find the desired recipe row
     recipe = recipe_df[recipe_df['Srno'] == id].iloc[0]
-
-    # Convert your instructions field (if it's stored as a string that needs literal_eval, do it here)
     recipe['Instructions'] = safe_literal_eval(recipe['Instructions'])
-    
-    # Initialize the Google Translate client
-    translator = Translator()
 
-    # If your recipe already has 'TranslatedIngredients' and 'TranslatedInstructions' in English:
-    english_ingredients = recipe.get('TranslatedIngredients', '')
-    english_instructions = recipe.get('TranslatedInstructions', '')
-
-    # Translate them into Hindi
-    if english_ingredients:
-        recipe['HindiTranslatedIngredients'] = translator.translate(english_ingredients, dest='hi').text
-    else:
-        recipe['HindiTranslatedIngredients'] = ''
-
-    if english_instructions:
-        recipe['HindiTranslatedInstructions'] = translator.translate(english_instructions, dest='hi').text
-    else:
-        recipe['HindiTranslatedInstructions'] = ''
-
-    # Render the updated recipe with Hindi fields
-    return render_template('recipe_details.html', recipe=recipe)
-
-
+    return render_template('recipe_details.html',recipe=recipe)
 
 @main.route('/favourites')
 @login_required
