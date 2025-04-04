@@ -1,0 +1,7 @@
+Flask
+Flask-SQLAlchemy
+Werkzeug
+pytest
+pytest-flask
+numpy
+pandas
