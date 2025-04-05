@@ -21,7 +21,7 @@ jobs:
       - name: 🐍 Set Up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.12.3'
 
       - name: 📦 Install Dependencies
         run: |
@@ -37,19 +37,19 @@ jobs:
           flake8 . --count --max-complexity=10 --max-line-length=88 --statistics
           black . --check
 
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/min'
+  # deploy:
+  #   needs: test
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/min'
 
-    steps:
-      - name: 📥 Checkout Repository
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: 📥 Checkout Repository
+  #       uses: actions/checkout@v3
 
-      - name: 🚀 Deploy to Heroku
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: |
-          heroku container:login
-          heroku container:push web --app foodie-finder-app
-          heroku container:release web --app foodie-finder-app
+  #     - name: 🚀 Deploy to Heroku
+  #       env:
+  #         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+  #       run: |
+  #         heroku container:login
+  #         heroku container:push web --app foodie-finder-app
+  #         heroku container:release web --app foodie-finder-app
