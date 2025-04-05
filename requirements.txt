@@ -25,6 +25,11 @@ Pillow  # For image processing if needed
 SQLAlchemy
 alembic  # For database migrations
 
+# Testing Dependencies
+# -------------------
+pytest
+pytest-flask
+
 # Security Dependencies
 # -------------------
 python-dotenv  # For environment variables
