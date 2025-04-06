@@ -15,12 +15,11 @@ main = Blueprint('main', __name__)
 
 def safe_literal_eval(val):
     try:
-        val = re.sub(r'\s+', ' ', val)  # Remove non-printable spaces
-        return ast.literal_eval(val)  # Try to convert safely
+        val = re.sub(r'\s+', ' ', val)  
+        return ast.literal_eval(val)  
     except (ValueError, SyntaxError):
-        return val  # Return original text if conversion fails
+        return val  
 
-# Get the directory of the current Python script
 current_dir = os.path.dirname(os.path.abspath(__file__))
 data_dir = os.path.join(current_dir, "..", "data")
 
@@ -30,7 +29,6 @@ def dish_finder():
     if request.method == 'POST':
         user_ingredients = request.form['ingredients']
         cooking_time_filter = request.form.get('cooking_time', 'all')
-        # Redirect to /results with both ingredients and cooking_time as query parameters.
         return redirect(url_for('main.results', ingredients=user_ingredients, cooking_time=cooking_time_filter))
     return render_template('dish_finder.html')
 
@@ -47,7 +45,6 @@ def results():
 
     print(f"Original user input: '{user_ingredients}'")
     
-    # Split into individual ingredients
     ingredients_list = user_ingredients.split(',')
     ingredients_list = [ing.strip() for ing in ingredients_list]
     print(f"Individual ingredients: {ingredients_list}")
@@ -55,7 +52,6 @@ def results():
     preprocessed_user_ingredients = preprocess_user_ingredients(user_ingredients)
     print(f"Preprocessed user input: '{preprocessed_user_ingredients}'")
 
-    # Load vectorizers and combined TF-IDF matrix
     with open(os.path.join(data_dir, "processed", "Vectorizer_names.pkl"), 'rb') as file:
         vectorizer_name = pickle.load(file)
     with open(os.path.join(data_dir, "processed", "Vectorizer_ingredients.pkl"), 'rb') as file:
@@ -65,56 +61,42 @@ def results():
     with open(os.path.join(data_dir, "processed", "Recipes.pkl"), 'rb') as file:
         recipe_df = pickle.load(file)
 
-    # Check each individual ingredient for zero similarity
     has_zero_similarity = False
-    threshold = 0.25  # Define threshold here so it's available for individual ingredient checks
+    threshold = 0.25
     for ingredient in ingredients_list:
-        # Preprocess individual ingredient
         preprocessed_ingredient = preprocess_user_ingredients(ingredient)
-        if preprocessed_ingredient.strip():  # Only process non-empty strings
-            # Get similarity for just this ingredient
+        if preprocessed_ingredient.strip():
             ingredient_vector_name = vectorizer_name.transform([preprocessed_ingredient])
             ingredient_vector_ing = vectorizer_ing.transform([preprocessed_ingredient])
             ingredient_vector_combined = hstack([0.5 * ingredient_vector_name, 0.5 * ingredient_vector_ing])
-            
-            # Compute similarity for this ingredient
             ingredient_similarity = cosine_similarity(ingredient_vector_combined, tfidf_combined)
             max_similarity = ingredient_similarity.max()
-            
             print(f"Ingredient '{ingredient}' has max similarity: {max_similarity}")
-            
-            # If any ingredient has similarity below threshold, mark for no results
             if max_similarity < threshold:
                 print(f"Ingredient '{ingredient}' has similarity below threshold!")
                 has_zero_similarity = True
                 break
 
-    # Process the combined user query for vectorizers
     user_query = preprocessed_user_ingredients
     user_vector_name = vectorizer_name.transform([user_query])
     user_vector_ing = vectorizer_ing.transform([user_query])
     user_vector_combined = hstack([0.5 * user_vector_name, 0.5 * user_vector_ing])
 
-    # Compute cosine similarity between user query and all recipes
     similarity_scores = cosine_similarity(user_vector_combined, tfidf_combined)
     scores = similarity_scores.flatten()
 
-    # Get all indices that meet the threshold
     print(f"Similarity threshold: {threshold}")
     all_valid_indices = [idx for idx, score in enumerate(scores) if score >= threshold]
     print(f"Indices above threshold: {all_valid_indices}")
 
-    # Check if we have any results above the threshold or if any ingredient has zero similarity
     if not all_valid_indices or has_zero_similarity:
         print("No recipes met the criteria: either below similarity threshold or ingredient with zero similarity")
         empty_recipes = pd.DataFrame(columns=recipe_df.columns)
         return render_template('res.html', recipes=empty_recipes, has_results=False, user_ingredients=user_ingredients, cooking_time_filter=cooking_time_filter)
 
-    # Create a DataFrame for all recipes meeting the threshold and add similarity scores
     recommended_df = recipe_df.iloc[all_valid_indices].copy()
     recommended_df['Similarity'] = [scores[idx] for idx in all_valid_indices]
 
-    # Apply cooking time filter if needed
     if cooking_time_filter != 'all':
         if cooking_time_filter == 'quick':
             recommended_df = recommended_df[recommended_df['TotalTimeInMins'] <= 30]
@@ -125,11 +107,9 @@ def results():
         elif cooking_time_filter == 'long':
             recommended_df = recommended_df[recommended_df['TotalTimeInMins'] > 60]
 
-    # Sort by similarity score in descending order and select the top 6
     recommended_df = recommended_df.sort_values(by='Similarity', ascending=False)
     recommended_recipes = recommended_df.head(6).copy()
 
-    # Convert Instructions safely
     if not recommended_recipes.empty:
         recommended_recipes.loc[:, 'Instructions'] = recommended_recipes['Instructions'].apply(safe_literal_eval)
         print(f"Final recommended recipe names: {recommended_recipes['RecipeName'].tolist()}")
@@ -137,7 +117,6 @@ def results():
     has_results = not recommended_recipes.empty
 
     return render_template('res.html', recipes=recommended_recipes, has_results=has_results, user_ingredients=user_ingredients, cooking_time_filter=cooking_time_filter)
-
 
 
 @main.route('/add_to_favourites/<int:id>', methods=['GET'])
@@ -202,7 +181,7 @@ def profile():
 @login_required
 def save_profile():
     if request.method == 'POST':
-        # Get form data
+        
         phone = request.form.get('phone')
         gender = request.form.get('gender')
         
@@ -218,7 +197,7 @@ def save_profile():
         
         db.session.commit()
         
-        # Show success message
+        
         flash('Profile updated successfully!', 'success')
         
         return redirect(url_for('main.profile'))
@@ -229,7 +208,7 @@ def discover():
     with open(os.path.join(data_dir, "processed", "Recipes.pkl"), 'rb') as file:
         recipe_df = pickle.load(file)
     
-    # Pre-filter recipes by category and limit to 6 per category
+   
     categories = ['Lunch', 'Snack', 'Dinner', 'South Indian Breakfast', 'North Indian Breakfast', 'Brunch']
     filtered_recipes = {}
     

@@ -57,7 +57,7 @@ def signup_post():
 
 @auth.route('/login')
 def login():
-    # Force logout any existing user
+    
     if current_user.is_authenticated:
         logout_user()
         session.clear()
@@ -79,7 +79,7 @@ def login_post():
         flash('Password is incorrect, please try again!','error')
         return redirect(url_for('auth.login'))
     
-    # Clear any existing session data first to prevent session fixation
+    
     session.clear()
     
     # Set remember=False to disable the remember me functionality
@@ -107,11 +107,11 @@ def login_post():
 @auth.route('/logout')
 @login_required
 def logout():
-    # Log logout attempt
+    
     if current_user.is_authenticated:
         print(f"User {current_user.email} logged out at {datetime.now()}")
     
-    # Logout the user
+  
     logout_user()
     
     # Clear the session completely
